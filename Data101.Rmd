@@ -29,7 +29,7 @@ library("ggplot2")
 
 Welcome to Data 101! In the humanities and social sciences we often find ourselves with data - that is, a set of information that can be organized into consistent categories and that we want to understand as a whole. Sometimes that data is given to us and other times we assemble it ourselves;
 
-If you have a spreadsheet of your own that you'd like to work with, I encourage you to do so; just don't forget to change the names of objects and variables in my code accordingly. Otherwise, we'll be working with library transaction data from the Muncie, Indiana Public Library between 1892 and 1904, available thanks to the (What Middletown Read Project)[https://lib.bsu.edu/wmr/].
+If you have a spreadsheet of your own that you'd like to work with, I encourage you to do so; just don't forget to change the names of objects and variables in my code accordingly. Otherwise, we'll be working with library transaction data from the Muncie, Indiana Public Library between 1892 and 1904, available thanks to the [What Middletown Read Project](https://lib.bsu.edu/wmr/).
 
 For this workshop, we'll mainly rely on the popular `dplyr` package. Packages are a common aspect of coding in R: they contain user-written functions designed to make analysis faster and easier.
 
@@ -310,4 +310,4 @@ Thanks for participating!
       arrange(desc(Total))
     ```
 
-[^5]:There are a lot of handy guides to using regular expressions available online. You might check out (the RStudio Regex Cheat Sheet)[https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf] or (Andrew Goldstone's lesson on the same)[https://content.sakai.rutgers.edu/access/content/group/71a813d6-2322-4e4a-94b2-47ab9c063e15/0219-slides.pdf].
+[^5]:There are tons of handy guides to using regular expressions available online. You might check out [the RStudio Regex Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf) or [Andrew Goldstone's lesson on the same](https://content.sakai.rutgers.edu/access/content/group/71a813d6-2322-4e4a-94b2-47ab9c063e15/0219-slides.pdf).

@@ -1,4 +1,4 @@
 # Data101
-So you’ve finally assembled or gotten your hands on a dataset or spreadsheet. Nice work! Not sure what to do next? These materials form a basic introductory workshop on data organization and manipulation, using (the dplyr package in R)[https://dplyr.tidyverse.org/] and data from the (What Middletown Read Project)[https://lib.bsu.edu/wmr/].
+So you’ve finally assembled or gotten your hands on a dataset or spreadsheet. Nice work! Not sure what to do next? These materials form a basic introductory workshop on data organization and manipulation, using [the dplyr package in R](https://dplyr.tidyverse.org/) and data from the [What Middletown Read Project](https://lib.bsu.edu/wmr/).
 
-This workshop was originally offered during April 2018 at Rutgers University-New Brunswick through the (New Brunswick Libraries Graduate Specialists program)[https://libguides.rutgers.edu/graduatespecialist/] and the (Rutgers DH Initiative)[http://dh.rutgers.edu/].
+This workshop was originally offered during April 2018 at Rutgers University-New Brunswick through the [New Brunswick Libraries Graduate Specialists program](https://libguides.rutgers.edu/graduatespecialist/) and the [Rutgers DH Initiative](http://dh.rutgers.edu/).
