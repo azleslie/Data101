@@ -1,0 +1,313 @@
+---
+title: "Data 101"
+author: "Alex Leslie"
+date: "9/17/2018"
+output:
+  html_document:
+    df_print: paged
+    toc: TRUE
+  pdf_document: default
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+if (!(require(dplyr))) {
+  install.packages("dplyr", repos = "http://cran.us.r-project.org")
+}
+if (!(require(stringr))) {
+  install.packages("stringr", repos = "http://cran.us.r-project.org")
+}
+if (!(require(ggplot2))) {
+  install.packages("ggplot2", repos = "http://cran.us.r-project.org")
+}
+library("dplyr")
+library("stringr")
+library("ggplot2")
+```
+
+Welcome to Data 101! In the humanities and social sciences we often find ourselves with data - that is, a set of information that can be organized into consistent categories and that we want to understand as a whole. Sometimes that data is given to us and other times we assemble it ourselves;
+
+If you have a spreadsheet of your own that you'd like to work with, I encourage you to do so; just don't forget to change the names of objects and variables in my code accordingly. Otherwise, we'll be working with library transaction data from the Muncie, Indiana Public Library between 1892 and 1904, available thanks to the (What Middletown Read Project)[https://lib.bsu.edu/wmr/].
+
+For this workshop, we'll mainly rely on the popular `dplyr` package. Packages are a common aspect of coding in R: they contain user-written functions designed to make analysis faster and easier.
+
+We often use structures like spreadsheets (like Excel documents), comma-separated values (.csv files), and other types of tabular formats in order to organize data in a way that is accessibly represented for human users and easily processed by computers or programming languages. Data is considered "tidy" when it meets these three conditions:[^1] 
+
+- Each variable must have its own column
+- Each observation must have its own row
+- Each value must have its own cell
+
+Before doing any computational analysis, it's essential to get our data into an organization that is tidy.
+
+## Getting Started in RStudio
+
+Don't panic: you're in RStudio Cloud, an environment that makes coding in R more transparent. Let's take a brief tour. Your window is divided into four segments. In the upper right, you'll see the environment: this displays all the objects you currently have loaded into memory. In the upper left, you'll see the script editor: this is the place to work on code that you're currently writing (or borrowing from elsewhere!). To run code in code chunks (the grey areas that start with "```{r}"), you can either press Ctrl+Enter to run single lines or click the green arrow to run the entire chunk (Ctrl+Shift+Enter will do the same). In the lower left, you'll see the console: this is where code actually executes and where the output prints. In the lower left, you'll see a few different things. The "Files" tab shows whatever files you've uploaded to the RStudio Cloud; if you run any plots, they'll show up in the "Plots" tab; you can also get help in the "Help" tab.
+
+First, let's read in our data into our environment. We'll do that by using a function, `read.csv`, to read in a .csv file and assign that data (using `<-`) to an object with whatever name we'd like ("transactions").
+```{r}
+transactions <- read.csv("transaction.csv", skip=1)
+books <- read.csv("book.csv", skip=1)
+```
+
+Sometimes it is necessary to join multiple spreadsheets together in order to link related sets of data. In this case, we have two .csv files pertaining to the same data: the books held in the Muncie, Indiana public library from 1891 to 1902 and the patron transactions from the same library during the same years. Before we get started, we'll use `inner_join` to join our transactions data frame and our books data frame by each book's Accession Number. By default, `inner_join` never removes observations: wherever there is a shared value in the specified variable, it will combine all other variables from each of the joining data frames into a single row. Wherever there isn't a shared value (e.g., a book that was never checked out), `inner_join` will simply leave the values for any missing variables blank.
+
+```{r}
+all_records <- inner_join(transactions, books, by="Accession..")
+# the number of observations isn't the same because some books aren't in books.csv
+
+all_records[] <- lapply(all_records, as.character)
+# this is just to make sure everything is in the more convenient character format
+```
+
+So what do we have here? In RStudio you can easily inspect data in the environment without coding. Just click on one of the objects, and a viewer window will show up in the script editor. This should look much like what your data looked like as a spreadsheet: note that we have values in each cell that are each associated with a row, corresponding to an observation, and a column, corresponding to a variable. In R programming, we call this format a data frame.
+
+## Getting Familiar with the Data Frame
+
+There are two simple data types: numerical and categorical. Numerical data can be either discrete (1, 3, 1891) or continuous (14.5, 2.333). Categorical data can entail a strictly-defined range of possible values (letters of the English alphabet, party membership in the British parliament), but it can also be much more extensive (shades of color, books published in the Northern Hemisphere). 
+
+Our data frame includes variables of numerical data (such as Transaction Date and Accession number), as well as categorical (such as Title or Borrower Name). It also currently includes a variable or two that seem to contain a bit of both (such as Author).
+
+R is handy because it allows us to select, inspect, and mutate our data in a wide range of possible ways. We can select values from a data frame by indicating their specific position within it. For example, let's say we wanted to know the name of the first book checked out. We know that the first transaction is the first observation in our data frame because our observations are arranged chronologically by transaction date; we also know Title is the third variable in our data frame. So all we need to do is index that exact position, row one column one, into all_records.
+```{r}
+all_records[1,3]
+```
+
+If we wanted to see all values belonging to that observation, we would simply index the number of the row followed by a comma, without a second number.
+```{r}
+all_records[1,]
+```
+
+If we instead wanted to see all values belonging to that variable, we could in similar fashion index the number of the column preceded by a comma without indexing the row. I've then gone and indexed the results again so as to only return the first ten - otherwise there would be 173,515!
+```{r}
+all_records[,3][1:10]
+```
+
+But since our variables have names, we can achieve the same result by using the `$` operator followed by the name of the desired variable; the results are exactly the same.
+```{r}
+all_records$Title.x[1:10]
+```
+
+## Basic Organizational Operations
+
+The `dplyr` package gives us seven basic functions for organizing and analyzing data frames.
+
+Function    | Use
+------------|---------------
+`rename`    | Rename a variable (column), new title = old title
+`select`    | Select variables (columns) to include / exclude (with a negative operator)
+`arrange`   | Arrange the order of observations, adding `desc` for descending order
+`filter`    | Filter observations (rows) based on their values for a specified variable
+`group_by`  | Put observations into groups by their values in a specified variable, for a subsequent `summarize` call
+`summarize` | Summarize data by groups, based on preceding `group_by` call, one row for each group
+`mutate`    | Create a new variable in a data frame by mutating an existing variable
+
+We'll also be using the piping operator, `%>%`, which allows us to pipe the output of one function directly into the next: this allows us to make our code clearer and more concise. Think of it like pouring our data through a series of sifters with increasingly smaller withes.
+
+First, let's rename some of these ugly variable (column) names with the `rename` function.
+```{r}
+all_records <- all_records %>%
+  rename("Accession" = "Accession..") %>%
+  rename("Title" = "Title.x")
+```
+
+All the piping operator does in those previous lines is tell the next function that we're still working with the all_records data frame. If we wanted to, we could achieve the exact same result by writing out each `rename` call separately: even with only two operations you can see the added redundancy.
+```{r, eval=FALSE}
+all_records <- rename(all_records, "Accession" = "Accession..")
+all_records <- rename(all_records, "Title" = "Title.x")
+```
+
+Our data frame has two variables for titles that each contain the exact information as a result of our `inner_join`. We can remove the duplicate and any other variables we don't want by using a negative operator  `select` 
+```{r}
+all_records <- all_records %>%
+  select(-Title.y) %>%
+  select(-Patron..) %>%
+  select(-X..Times.Checked.Out) %>%
+  select(-Transaction.Comments)
+```
+
+We can also systematically transform, or mutate, values within the data frame. For this we'll use `mutate`, a function that will allow us to declare a new variable within the data frame based on an existing variable. As with `rename`, the new variable comes first and the existing one comes second. You may have noticed that our dates are currently a bit of an eyesore: let's mutate all the dates at once into a format that's more readable for both us and R.
+```{r}
+all_records <- all_records %>%
+  mutate(Transaction.Date = as.Date(Transaction.Date.YYYYMMDD., "%Y%m%d")) %>%
+  select(-Transaction.Date.YYYYMMDD.)
+```
+
+Since this mutation is just reformating rather than creating new data, we can remove the old variable. Let's go ahead and make that same mutation for the Accession Date, i.e., the date when the book was added to the library catalog.
+```{r}
+all_records <- all_records %>%
+  mutate(Accession.Date = as.Date(Accession.Date..YYYYMMDD., "%Y%m%d")) %>%
+  select(-Accession.Date..YYYYMMDD.)
+```
+
+Now that these dates are properly formatted, we can use `mutate` to generate new information. How old was each book when it was checked out? Let's run a quick test by indexing only the first value in each column:
+```{r}
+all_records$Transaction.Date[1] - all_records$Accession.Date[1]
+```
+
+Easy enough! We'll just make sure to change the result to a plain number using `as.numeric` for ease of use. If we wanted to store Book Age in years, what would we have to add?[^2]
+```{r}
+all_records <- all_records %>%
+  mutate(Book.Age = as.numeric(Transaction.Date - Accession.Date))
+```
+
+`select` is only for selecting variables/columns. When we want to identify observations/rows, however, we `filter`. `filter` is particularly handy when working with numeric (or pseudo-numeric) data. Here, for example, we can filter out all observations with transaction dates earlier than (less than) 1893.
+```{r}
+records_before_1892 <- all_records %>%
+  filter(Transaction.Date < "1892-01-01")
+```
+
+Right now, all_records is arranged by transaction date. That's swell, but we may wish to change that. This is where the `arrange` function comes in.
+```{r}
+records_by_borrower <- all_records %>% 
+   arrange(Borrower.Name)
+```
+
+```{r, include=FALSE}
+rm(transactions, books, records_before_1893, records_by_borrower)
+# just removing some of the objects from memory that we won't need anymore
+```
+
+## Summarizing Data
+
+So far we've explored a number of functions for better structuring our data (with `rename`, `select`, and `arrange`), identifying particular subsets of our data (with `filter`), and even extracting additional variables from the data we already have (with `mutate`). Most analysis, however, involves summarizing data: that is, quantifying particular patterns or tendencies. For this, we'll want to utilize the powerful one-two punch of `group_by` and `summarize`.
+
+Which authors were checked out the most? To determine this, we'll group all of our observations by the Author variable (with `group_by`) and then `summarize` the number (`n`) of observations in each group as a new variable, Total. For ease of use, we'll save this as a new data frame, top_authors. Finally, we'll `arrange` that data frame by the Total number of times their books were checked out (rather than the alphabetical default).[^3]
+```{r}
+top_authors <- all_records %>% 
+  group_by(Author) %>% 
+  summarize(Total=n()) %>%
+  arrange(desc(Total))
+```
+
+There are two things to note here. First, our analysis is only as clean as our data. If an author's name is spelled inconsistently in our initial data, we will have multiple results, corresponding to each spelling of the author's name.
+
+Second, the only variables retained in any operation ending with `summarize` are the ones explicitly specified for summary (in this case, Author and Total). We might, however, want to have a slightly less sweeping summary, such as one that groups observations first by Author and then by Text.
+```{r}
+top_titles <- all_records %>% 
+  group_by(Author, Title) %>% 
+  summarize(Total=n()) %>%
+  arrange(desc(Total))
+```
+
+Order matters here. Try reversing Author and Title and running the code again; what is the difference?
+
+We've been trying to quantify our data based on shared variables, but repeat observations are often of interest too. For example, how many times does each borrower check out the same book?
+```{r}
+renewals <- all_records %>%
+  group_by(Borrower.Name, Title) %>%
+  summarize(Total=n())
+```
+
+There's a lot of information here. If we indeed wanted this data frame to include only observations in which the same person checked out the same book more than once, what would we have to add? If we then wanted to sort our data by the number of checkouts, what would we have to add?[^4]
+
+## Searches and Regular Expressions
+
+Earlier, we were able to filter observations based on numeric or quantitative variables using `filter`. Now, it is possible to siphon off categorical or qualitative data using tools we've already introduced: if we had the exact value in the exact manner in which it appeared in our data we could use `filter` to obtain them, and if we were interested sorting into categories we could rely on the default alphabetization of `arrange`. But when working with variables that predominantly contain long character strings - like descriptions, sentences, tweets, long book titles, etc. - it is sometimes valuable to search for particular terms.
+
+Let's say we wanted to find all the observations (rows) that have a particular value for a particular variable (column): in this case, the number of books checked out by a single author. We can use filter so long as we have the exact name of the desired Author, for example:
+```{r, max.print=10, rows.print=10}
+all_records %>%
+  filter(Author == "Howells, William Dean, 1837-1920.")
+```
+
+But what if some of our observations record Howells' lifespan differently - as, in fact, some of them do? What we want is a search that can locate just part of the value. To do that, we'll use an R function, `grep`, that searches for an exact character pattern within a vector. (I'll index the results so that we only see the first ten.)
+```{r}
+grep("Howells, William", all_records$Author)[1:10]
+```
+
+This gives us a long list of numbers. What are these numbers? They're the position of each hit in `test$Author`; in other words, they correspond to the observation or row in our data frame. What we actually want to see is all the information pertaining to each observation: to do so, we'll index those positions into the data frame (using a comma followed by nothing in order to get the entire row for each hit):
+```{r, max.print=10, rows.print=10}
+all_records[grep("Howells, William", all_records$Author),]
+```
+
+We can make our searches even more particular. For example, we could just as easily carry out the same operation but for all books that contain the word "adventure" in their titles. (Because `grep` is only concerned with matching the exact character pattern and nothing outside the quotation marks, it will return values that include "adventures" or "adventured" but not "adventuring").
+```{r, max.print=10, rows.print=10}
+all_records[grep("adventure", all_records$Title),]
+```
+
+As earlier mentioned, our data frame has some variables that mix numeric and categorical data, such as Author, which includes an Author's name as well as the years of their birth and death. Separating these three pieces of data into three distinct variables may not be strictly necessary, but it could be helpful.
+
+Since we're looking to create a new variable based on an existing one, we're definitely going to want to use `mutate`. How exactly are we looking to `mutate`? Let's look at the values for the Author variable again more closely.
+
+We know each entry begins with a name composed of characters, but the length of that name varies (and sometimes includes a nom de plume in parentheses). We know that this followed by a four-digit number representing year of birth, but there is some variance in what separates them: sometimes just a comma, sometimes a comma and a symbol. Year of birth, however, is always followed by a dash, followed by a four-digit number representing year of death. Sometimes year of death is followed by a period, but not always.
+
+In other words, we're looking for something that follows a regular pattern and occupies a regular position within each value. The solution is a regular expression: an expression that represents a textual pattern rather than a specific string of text. 
+
+Within a regular expression, certain character symbols act as metacharacters, carrying special meaning. For example, "\\d" designates any digit whereas "\\w" designates any letter; if either of these are immediately followed by curled brackets and a number, such as "{4}", we are telling the function to locate four digits or characters, respectively. We won't go into detail with regular expressions, as this would require a longer workshop; rather, my aim is just to introduce the concept and demonstrate its utility.[^5]
+
+Since we're trying to substitute out the desired text rather than simply locate it, we'll need to use `gsub` instead of `grep`.
+```{r, warning=FALSE}
+all_records <- all_records %>%
+  mutate(Author.Death = as.numeric(gsub("^.*-(\\d{4})", "\\1", Author)))
+```
+
+## Visualization
+
+Another great benefit of working with data in R is that one can easily transition from analysis to visualization. For example, we can generate a quick graph of the top_authors data frame we made earlier:
+```{r}
+top_authors[2:11,] %>%
+  ggplot(aes(x=reorder(Author, Total), y=Total)) +
+  geom_bar(stat="identity") +
+  coord_flip() +
+  ggtitle("Most Checked-Out Authors") +
+  theme(plot.title = element_text(face="bold", size=rel(1.5))) +
+  labs(x="Author", y="Total Transactions")
+```
+
+Sometimes visualization can help us see additional areas for analysis. For example, let's simply make a timeline of all transactions.
+```{r}
+all_records %>%
+  ggplot(aes(x=Transaction.Date)) +
+  geom_bar() +
+  scale_x_date(date_breaks = "year", date_labels=("%Y")) +
+  labs(x="Time", y="Transactions") +
+  ggtitle("Muncie Library Transactions") + 
+  theme(plot.title = element_text(face="bold", size=rel(1.5))) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+This graph is nice in itself. But even more importantly, it makes obvious something that we might've otherwise overlooked: the fact that the number of transactions follows a seasonal rhythm.
+
+There's an important moral here: visualization is never the end of analysis. Whatever results our computational analysis produces, visual or otherwise, we must then utilize for further analysis.
+
+If you'd like to keep the changes you made to your data frame today, don't forget to save it:
+```{r}
+write.csv(all_records, "name_this_file.csv")
+```
+
+Finally, we would really appreciate it if you took a minute to [fill out our brief feedback survey](https://rutgers.ca1.qualtrics.com/jfe/form/SV_e3OFcMS6wF3rdWJ).
+
+If you'd like to look at this workshop in more detail or run the code yourself, visit https://github.com/azleslie/Data101.
+
+Thanks for participating!
+
+
+
+
+
+
+[^1]:This definition comes from Garret Grolemund and Hadley Wickham's [*R for Data Science*](http://r4ds.had.co.nz/tidy-data.html).]
+
+[^2]:Solution:
+
+    ```{r, eval=FALSE}
+    round(as.numeric(all_records$Transaction.Date - all_records$Accession.Date)/365.25, digits=2)
+    ```
+
+[^3]:There are always multiple ways to achieve any given result when coding. This particular solution is useful for further analysis, but if all we wanted to know was the most frequently checked out authors we could do so even more efficiently with:
+
+    ```{r, eval=FALSE}
+    sort(table(all_records$Author), decreasing=TRUE)
+    ```
+
+[^4]:Solution:
+
+    ```{r, eval=FALSE}
+    renewals %>%
+      filter(Total>1) %>%
+      arrange(desc(Total))
+    ```
+
+[^5]:There are a lot of handy guides to using regular expressions available online. You might check out (the RStudio Regex Cheat Sheet)[https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf] or (Andrew Goldstone's lesson on the same)[https://content.sakai.rutgers.edu/access/content/group/71a813d6-2322-4e4a-94b2-47ab9c063e15/0219-slides.pdf].
