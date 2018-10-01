@@ -27,11 +27,11 @@ library("stringr")
 library("ggplot2")
 ```
 
-Welcome to Data 101! In the humanities and social sciences we often find ourselves with data - that is, a set of information that can be organized into consistent categories and that we want to understand as a whole. Sometimes that data is given to us and other times we assemble it ourselves;
+Welcome to Data 101! In the humanities and social sciences we often find ourselves with data - that is, a set of information that can be organized into consistent categories and that we want to understand as a whole. Sometimes that data is given to us and other times we assemble it ourselves; but in either case the data is only the beginning. In this workshop you'll learn how to carry out some of the essential operations for organizing, transforming, and analyzing your data.
+
+We'll mainly rely on the popular `dplyr` package. Packages are a common aspect of coding in R: they contain user-written functions designed to make analysis faster and easier.
 
 If you have a spreadsheet of your own that you'd like to work with, I encourage you to do so; just don't forget to change the names of objects and variables in my code accordingly. Otherwise, we'll be working with library transaction data from the Muncie, Indiana Public Library between 1892 and 1904, available thanks to the [What Middletown Read Project](https://lib.bsu.edu/wmr/).
-
-For this workshop, we'll mainly rely on the popular `dplyr` package. Packages are a common aspect of coding in R: they contain user-written functions designed to make analysis faster and easier.
 
 We often use structures like spreadsheets (like Excel documents), comma-separated values (.csv files), and other types of tabular formats in order to organize data in a way that is accessibly represented for human users and easily processed by computers or programming languages. Data is considered "tidy" when it meets these three conditions:[^1] 
 
@@ -39,13 +39,13 @@ We often use structures like spreadsheets (like Excel documents), comma-separate
 - Each observation must have its own row
 - Each value must have its own cell
 
-Before doing any computational analysis, it's essential to get our data into an organization that is tidy.
+Before doing any computational analysis, it's essential to get our data into an organization that is tidy. The data I've selected is already quite tidy, but several of the functions here can save a ton of time if you have additional tidying to do before you can begin working with your own.
 
 ## Getting Started in RStudio
 
 Don't panic: you're in RStudio Cloud, an environment that makes coding in R more transparent. Let's take a brief tour. Your window is divided into four segments. In the upper right, you'll see the environment: this displays all the objects you currently have loaded into memory. In the upper left, you'll see the script editor: this is the place to work on code that you're currently writing (or borrowing from elsewhere!). To run code in code chunks (the grey areas that start with "```{r}"), you can either press Ctrl+Enter to run single lines or click the green arrow to run the entire chunk (Ctrl+Shift+Enter will do the same). In the lower left, you'll see the console: this is where code actually executes and where the output prints. In the lower left, you'll see a few different things. The "Files" tab shows whatever files you've uploaded to the RStudio Cloud; if you run any plots, they'll show up in the "Plots" tab; you can also get help in the "Help" tab.
 
-First, let's read in our data into our environment. We'll do that by using a function, `read.csv`, to read in a .csv file and assign that data (using `<-`) to an object with whatever name we'd like ("transactions").
+First, let's read in our data into our environment. We'll do that by using a function, `read.csv`, to read in a .csv file and assign that data (using `<-`) to an object with whatever name we'd like ("transactions"). (If you want to try working with your own spreadsheets, change the object names and file names as desired.)
 ```{r}
 transactions <- read.csv("transaction.csv", skip=1)
 books <- read.csv("book.csv", skip=1)
