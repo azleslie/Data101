@@ -6,6 +6,6 @@ This workshop was originally offered during April 2018 at Rutgers University-New
 ## File Guide
 **Data101.Rmd** Master .Rmd file for participating in the workshop or editing code; used to generate .html file.
 
-**Data101.html** This .html file is best for viewing the workshop or following along outside of an R or RStudio environment; it contains all code as well as sample outputs and figures.
+**Data101.html** This .html file is best for viewing the workshop or following along outside of an R or RStudio environment; it contains all code as well as sample outputs and figures. [Click here to view in-browser without downloading.](https://htmlpreview.github.io/?https://github.com/azleslie/Data101/blob/master/Data101.html) 
 
 **transaction.csv** and **book.csv** The .csv files used as default data in the workshop, downloadable from the What Middletown Read Project website [with a blank advanced search](https://lib.bsu.edu/wmr/search.php#advanced).
