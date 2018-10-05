@@ -3,10 +3,10 @@ title: "Data 101"
 author: "Alex Leslie"
 date: "9/17/2018"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
     toc: TRUE
-  pdf_document: default
 editor_options:
   chunk_output_type: console
 ---
@@ -277,7 +277,7 @@ If you'd like to keep the changes you made to your data frame today, don't forge
 write.csv(all_records, "name_this_file.csv")
 ```
 
-Finally, we would really appreciate it if you took a minute to [fill out our brief feedback survey](https://rutgers.ca1.qualtrics.com/jfe/form/SV_e3OFcMS6wF3rdWJ).
+Finally, we would really appreciate it if you took a minute to [fill out our brief feedback survey](https://rutgers.ca1.qualtrics.com/jfe/form/SV_a3itiZN18dY3fc9).
 
 If you'd like to look at this workshop in more detail or run the code yourself, visit https://github.com/azleslie/Data101.
 
