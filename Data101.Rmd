@@ -3,10 +3,10 @@ title: "Data 101"
 author: "Alex Leslie"
 date: "9/17/2018"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
     toc: TRUE
+  pdf_document: default
 editor_options:
   chunk_output_type: console
 ---
@@ -27,7 +27,7 @@ library("stringr")
 library("ggplot2")
 ```
 
-Welcome to Data 101! In the humanities and social sciences we often find ourselves with data - that is, a set of information that can be organized into consistent categories and that we want to understand as a whole. Sometimes that data is given to us and other times we assemble it ourselves; but in either case the data is only the beginning. In this workshop you'll learn how to carry out some of the essential operations for organizing, transforming, and analyzing your data.
+Welcome to Data 101! In the humanities and social sciences we often find ourselves with data - that is, a set of observations that can be organized into consistent categories for the sake of understanding broader patterns or systems of relation. In this workshop you'll learn how to carry out some of the essential operations for organizing, transforming, and analyzing your data.
 
 We'll mainly rely on the popular `dplyr` package. Packages are a common aspect of coding in R: they contain user-written functions designed to make analysis faster and easier.
 
@@ -63,28 +63,28 @@ all_records[] <- lapply(all_records, as.character)
 
 So what do we have here? In RStudio you can easily inspect data in the environment without coding. Just click on one of the objects, and a viewer window will show up in the script editor. This should look much like what your data looked like as a spreadsheet: note that we have values in each cell that are each associated with a row, corresponding to an observation, and a column, corresponding to a variable. In R programming, we call this format a data frame.
 
-## Getting Familiar with the Data Frame
+## Getting Familiar with Data Frames
 
 There are two simple data types: numerical and categorical. Numerical data can be either discrete (1, 3, 1891) or continuous (14.5, 2.333). Categorical data can entail a strictly-defined range of possible values (letters of the English alphabet, party membership in the British parliament), but it can also be much more extensive (shades of color, books published in the Northern Hemisphere). 
 
 Our data frame includes variables of numerical data (such as Transaction Date and Accession number), as well as categorical (such as Title or Borrower Name). It also currently includes a variable or two that seem to contain a bit of both (such as Author).
 
-R is handy because it allows us to select, inspect, and mutate our data in a wide range of possible ways. We can select values from a data frame by indicating their specific position within it. For example, let's say we wanted to know the name of the first book checked out. We know that the first transaction is the first observation in our data frame because our observations are arranged chronologically by transaction date; we also know Title is the third variable in our data frame. So all we need to do is index that exact position, row one column one, into all_records.
+R is handy because it allows us to select, inspect, and mutate our data in a wide range of possible ways. We can select single values from a data frame by indicating their specific position within it. For example, let's say we wanted to know the name of the first book checked out. We know that the first transaction is the first observation in our data frame because our observations are arranged chronologically by transaction date; we also know Title is the third variable in our data frame. So all we need to do is index that exact position, row one column one, into all_records.
 ```{r}
 all_records[1,3]
 ```
 
-If we wanted to see all values belonging to that observation, we would simply index the number of the row followed by a comma, without a second number.
+If we wanted to see all values belonging to a particular observation, we would simply index the number of the row followed by a comma, without a second number.
 ```{r}
 all_records[1,]
 ```
 
-If we instead wanted to see all values belonging to that variable, we could in similar fashion index the number of the column preceded by a comma without indexing the row. I've then gone and indexed the results again so as to only return the first ten - otherwise there would be 173,515!
+If we instead wanted to see all values belonging to a given variable, we could in similar fashion index the number of the column preceded by a comma without indexing the row. I've then gone and indexed the results again so as to only return the first ten - otherwise there would be 173,515!
 ```{r}
 all_records[,3][1:10]
 ```
 
-But since our variables have names, we can achieve the same result by using the `$` operator followed by the name of the desired variable; the results are exactly the same.
+But since variables (should!) have names, we can achieve the same result more legibly by using the `$` operator followed by the name of the desired variable; the results are exactly the same.
 ```{r}
 all_records$Title.x[1:10]
 ```
@@ -231,11 +231,17 @@ As earlier mentioned, our data frame has some variables that mix numeric and cat
 
 Since we're looking to create a new variable based on an existing one, we're definitely going to want to use `mutate`. How exactly are we looking to `mutate`? Let's look at the values for the Author variable again more closely.
 
-We know each entry begins with a name composed of characters, but the length of that name varies (and sometimes includes a nom de plume in parentheses). We know that this followed by a four-digit number representing year of birth, but there is some variance in what separates them: sometimes just a comma, sometimes a comma and a symbol. Year of birth, however, is always followed by a dash, followed by a four-digit number representing year of death. Sometimes year of death is followed by a period, but not always.
+Here's what we know:
 
-In other words, we're looking for something that follows a regular pattern and occupies a regular position within each value. The solution is a regular expression: an expression that represents a textual pattern rather than a specific string of text. 
+- Each entry begins with a name composed of characters, but the length of that name varies (and sometimes includes a nom de plume in parentheses)
+- This followed by a four-digit number representing year of birth.
+- But there is some variance in what separates name from birth: sometimes just a comma, sometimes a comma and a symbol. 
+- Year of birth, however, is always followed by a dash, followed by a four-digit number representing year of death. 
+- Sometimes year of death is followed by a period, but not always.
 
-Within a regular expression, certain character symbols act as metacharacters, carrying special meaning. For example, "\\d" designates any digit whereas "\\w" designates any letter; if either of these are immediately followed by curled brackets and a number, such as "{4}", we are telling the function to locate four digits or characters, respectively. We won't go into detail with regular expressions, as this would require a longer workshop; rather, my aim is just to introduce the concept and demonstrate its utility.[^5]
+In other words, we're looking for something that follows a regular pattern and occupies a regular position within each value. The solution is a *regular expression*: an expression that represents a textual pattern rather than a specific string of text. 
+
+Within a regular expression, certain character symbols act as metacharacters, carrying special meaning. For example, "\\d" designates any digit whereas "\\w" designates any letter; if either of these are immediately followed by curled brackets and a number, such as "{4}", we are telling the function to locate four digits or characters, respectively. We won't go into detail with regular expressions, as this would require an additional workshop in itself; rather, my aim is simply to introduce the concept and gesture towards its considerable utility.[^5]
 
 Since we're trying to substitute out the desired text rather than simply locate it, we'll need to use `gsub` instead of `grep`.
 ```{r, warning=FALSE}
@@ -243,9 +249,13 @@ all_records <- all_records %>%
   mutate(Author.Death = as.numeric(gsub("^.*-(\\d{4})", "\\1", Author)))
 ```
 
+How simple! With regular expressions, one can remove unwanted punctuation, flip forename-surname order, correct semi-consistent errors, search for variant spellings at the same time, and much more in order to carry out more efficient and nuanced tidying or analysis.
+
 ## Visualization
 
-Another great benefit of working with data in R is that one can easily transition from analysis to visualization. For example, we can generate a quick graph of the top_authors data frame we made earlier:
+Another great benefit of working with data in R is that one can easily transition from analysis to visualization, without switching software, changing files, or redoing work. While we don't have time to go into the particulars of visualization in R, I want to briefly gesture towards the possibilities here.
+
+For example, we can easily generate a quick graph of the top_authors data frame we made earlier:
 ```{r}
 top_authors[2:11,] %>%
   ggplot(aes(x=reorder(Author, Total), y=Total)) +
@@ -255,6 +265,8 @@ top_authors[2:11,] %>%
   theme(plot.title = element_text(face="bold", size=rel(1.5))) +
   labs(x="Author", y="Total Transactions")
 ```
+
+Most of this code is just cosmetic. Based on what we've done so far and what you can intuit from the names of functions, see if you can read it.
 
 Sometimes visualization can help us see additional areas for analysis. For example, let's simply make a timeline of all transactions.
 ```{r}
@@ -268,7 +280,7 @@ all_records %>%
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-This graph is nice in itself. But even more importantly, it makes obvious something that we might've otherwise overlooked: the fact that the number of transactions follows a seasonal rhythm.
+This graph is useful in itself. But even more importantly, it makes obvious something that we might've otherwise overlooked: the fact that the number of transactions follows a seasonal rhythm.
 
 There's an important moral here: visualization is never the end of analysis. Whatever results our computational analysis produces, visual or otherwise, we must then utilize for further analysis.
 
