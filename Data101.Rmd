@@ -6,7 +6,6 @@ output:
   html_document:
     df_print: paged
     toc: TRUE
-  pdf_document: default
 editor_options:
   chunk_output_type: console
 ---
@@ -245,6 +244,7 @@ See how useful our initial exercises with indexing have become? Any time we have
 We can make our searches even more freely. For example, we could just as easily carry out the same operation but for all books that contain the word "adventure" in their titles. (Because `grep` is only concerned with matching the exact character pattern and nothing outside the quotation marks, it will return values that include "adventures" or "adventured" but not "adventuring").
 ```{r, max.print=8, rows.print=8}
 all_records[grep("adventure", all_records$Title),]
+#note to Alex: index grep call when knitting to pdf
 ```
 
 As earlier mentioned, our data frame has some variables that mix numeric and categorical data, such as Author, which includes an Author's name as well as the years of their birth and death. Separating these three pieces of data into three distinct variables may not be strictly necessary, but it could be helpful.
