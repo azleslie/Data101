@@ -5,7 +5,7 @@ date: "9/17/2018"
 output:
   html_document:
     df_print: paged
-    toc: TRUE
+    toc: yes
 editor_options:
   chunk_output_type: console
 ---
@@ -42,7 +42,7 @@ Before doing any computational analysis, it's essential to get our data into an 
 
 ## Getting Started in RStudio
 
-Don't panic: you're in RStudio Cloud, an environment that makes coding in R more transparent. Let's take a brief tour. Your window is divided into four segments. In the upper right, you'll see the environment: this displays all the objects you currently have loaded into memory. In the upper left, you'll see the script editor: this is the place to work on code that you're currently writing (or borrowing from elsewhere!). To run code in code chunks (the grey areas that start with "```{r}"), you can either press Ctrl+Enter to run single lines or click the green arrow to run the entire chunk (Ctrl+Shift+Enter will do the same). In the lower left, you'll see the console: this is where code actually executes and where the output prints. In the lower left, you'll see a few different things. The "Files" tab shows whatever files you've uploaded to the RStudio Cloud; if you run any plots, they'll show up in the "Plots" tab; you can also get help in the "Help" tab.
+Don't panic: you're in RStudio Cloud, an environment that makes coding in R more transparent. Let's take a brief tour. Your window is divided into four segments. In the upper right, you'll see the environment: this displays all the objects you currently have loaded into memory. In the upper left, you'll see the script editor: this is the place to work on code that you're currently writing (or borrowing from elsewhere!). To run code in code chunks (the grey chunks), you can either press Ctrl+Enter to run single lines or click the green arrow to run the entire chunk (Ctrl+Shift+Enter will do the same). In the lower left, you'll see the console: this is where code actually executes and where the output prints. In the lower left, you'll see a few different things. The "Files" tab shows whatever files you've uploaded to the RStudio Cloud; if you run any plots, they'll show up in the "Plots" tab; you can also get help in the "Help" tab.
 
 First, let's read in our data into our environment. We'll do that by using a function, `read.csv`, to read in a .csv file and assign that data (using `<-`) to an object in our environment with whatever name we'd like ("transactions"). (If you want to try working with your own spreadsheet, change the file name and then change the object name to "all_records".)
 ```{r}
