@@ -1,6 +1,6 @@
 ---
 title: "Data 101"
-author: "Alex Leslie"
+author: "[Alex Leslie](https://english.rutgers.edu/cb-profile/ahl80.html)"
 date: "9/17/2018"
 output:
   html_document:
