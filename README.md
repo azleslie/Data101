@@ -8,4 +8,4 @@ This workshop was originally offered during the Fall 2018 semester at Rutgers Un
 
 **Data101.html** This .html file is best for viewing the workshop or following along outside of an R or RStudio environment; it contains all code as well as sample outputs and figures. [Click here to view in-browser without downloading.](https://htmlpreview.github.io/?https://github.com/azleslie/Data101/blob/master/Data101.html) 
 
-**transaction.csv** and **book.csv** Default sample data from the from the [What Middletown Read Project](https://lib.bsu.edu/wmr/) used in the workshop - though users are encouraged to use their own data saved in .csv format. Downloadable from the What Middletown Read Project website [with a blank advanced search](https://lib.bsu.edu/wmr/search.php#advanced).
+**transaction.csv** and **book.csv** Default sample data from the from the [What Middletown Read Project](https://lib.bsu.edu/wmr/) used in the workshop - though users are welcome to use their own data saved in .csv format. Downloadable from the What Middletown Read Project website [with a blank advanced search](https://lib.bsu.edu/wmr/search.php#advanced).
