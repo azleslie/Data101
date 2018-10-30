@@ -28,7 +28,7 @@ library("ggplot2")
 
 Welcome to Data 101! In the humanities and social sciences we often find ourselves with data - that is, a set of observations that can be organized into consistent categories for the sake of understanding broader patterns or systems of relation. In this workshop you'll learn how to carry out some of the essential operations for organizing, transforming, and analyzing your data.
 
-Run the section of setup code above first by clicking the green arrow in the upper right of the grey box. We'll mainly rely on the popular `dplyr` package. Packages are a common aspect of coding in R: they contain user-written functions designed to make analysis faster and easier.
+First of all, run the section of setup code above by clicking the green arrow in the upper right of the grey box. We'll mainly rely on the popular `dplyr` package. Packages are a common aspect of coding in R: they contain user-written functions designed to make analysis faster and easier.
 
 If you have a spreadsheet of your own that you'd like to work with, I encourage you to do so; just don't forget to change the names of objects and variables in my code accordingly. Otherwise, we'll be working with library transaction data from the Muncie, Indiana Public Library between 1891 and 1904, available thanks to the [What Middletown Read Project](https://lib.bsu.edu/wmr/).
 
@@ -70,7 +70,7 @@ There are two simple data types: numerical and categorical. Numerical data can b
 
 Our data frame includes variables of numerical data (such as Transaction Date and Accession number), as well as categorical (such as Title or Borrower Name). It also currently includes a variable or two that seem to contain a bit of both (such as Author): ideally, we'll want to separate those out later.
 
-R is handy because it allows us to select, inspect, and mutate our data in a wide range of possible ways. We can select single values from a data frame by indicating their specific position within it. For example, let's say we wanted to know the name of the first book checked out. We know that the first transaction is the first observation in our data frame because our observations are arranged chronologically by transaction date; we also know Title is the third variable in our data frame. So all we need to do is *index* that exact position, row one column one, into all_records by using brackets.
+R is handy because it allows us to select, inspect, and mutate our data in a wide range of possible ways. We can select single values from a data frame by indicating their specific position within it. For example, let's say we wanted to know the name of the first book checked out. We know that the first transaction is the first observation in our data frame because our observations are arranged chronologically by transaction date; we also know Title is the third variable in our data frame. So all we need to do is *index* that exact position, row one column three, into all_records by using brackets.
 ```{r}
 all_records[1,3]
 ```
@@ -162,7 +162,7 @@ all_records <- all_records %>%
   mutate(Book.Age = as.numeric(Transaction.Date - Accession.Date))
 ```
 
-`select` is only for selecting variables/columns. When we want to identify observations/rows, however, we `filter`. `filter` is particularly handy when working with numeric (or pseudo-numeric) data. Here, for example, we can filter out all observations with transaction dates earlier than (less than) 1893.
+`select` is only for selecting variables/columns. When we want to identify observations/rows, however, we `filter`. `filter` is particularly handy when working with numeric (or pseudo-numeric) data. Here, for example, we can filter out all observations with transaction dates earlier than (less than) January 1, 1892.
 ```{r}
 records_before_1892 <- all_records %>%
   filter(Transaction.Date < "1892-01-01")
@@ -234,7 +234,7 @@ But what if some of our observations record Howells' lifespan differently - as, 
 grep("Howells, William", all_records$Author)[1:8]
 ```
 
-This gives us a long list of numbers. What are these numbers? They're the position of each hit in `test$Author`; in other words, they correspond to each observation or row in our data frame containing the characters "Howells, William" in the Author variable. What we actually want to see is all the information pertaining to each observation: to do so, we'll index those positions - with the same code - into the data frame (using brackets and a comma followed by nothing in order to get the entire row for each hit):
+This gives us a long list of numbers. What are these numbers? They're the position of each hit in `all_records$Author`; in other words, they correspond to each observation or row in our data frame containing the characters "Howells, William" in the Author variable. What we actually want to see is all the information pertaining to each observation: to do so, we'll index those positions - with the same code - into the data frame (using brackets and a comma followed by nothing in order to get the entire row for each hit):
 ```{r, max.print=8, rows.print=8}
 all_records[grep("Howells, William", all_records$Author),]
 ```
@@ -249,9 +249,7 @@ all_records[grep("adventure", all_records$Title),]
 
 As earlier mentioned, our data frame has some variables that mix numeric and categorical data, such as Author, which includes an Author's name as well as the years of their birth and death. Separating these three pieces of data into three distinct variables may not be strictly necessary, but it could be helpful.
 
-Since we're looking to create a new variable based on an existing one, we're definitely going to want to use `mutate`. How exactly are we looking to `mutate`? Let's look at the values for the Author variable again more closely.
-
-Here's what we know:
+Since we're looking to create a new variable based on an existing one, we're definitely going to want to use `mutate`. How exactly are we looking to `mutate`? Let's look at the values for the Author variable again more closely to note any regular patterns. Here's what we know:
 
 - Each entry begins with a name composed of characters, but the length of that name varies (and sometimes includes a nom de plume in parentheses).
 - This followed by a four-digit number representing year of birth.
@@ -261,7 +259,7 @@ Here's what we know:
 
 In other words, we're looking for something that follows a regular pattern and occupies a regular position within each value. The solution is a *regular expression*: an expression that represents a textual pattern rather than a specific string of text. 
 
-Within a regular expression, certain character symbols act as metacharacters, carrying special meaning. For example, '\\d' designates any digit whereas '\\w' designates any letter; if either of these are immediately followed by curled brackets and a number, such as '{4}', we are telling the function to locate four digits or characters, respectively. We won't go into detail with regular expressions, as this would require an additional workshop in itself; rather, my aim is simply to introduce the concept and gesture towards its considerable utility.[^6]
+Within a regular expression, certain character symbols act as metacharacters, carrying special meaning. For example, `\\d` designates any digit whereas `\\w` designates any letter; if either of these are immediately followed by curled brackets and a number, such as `{4}`, we are telling the function to locate four digits or characters, respectively. We won't go into detail with regular expressions, as this would require an additional workshop in itself; rather, my aim is simply to introduce the concept and gesture towards its considerable utility.[^6]
 
 Since we're trying to substitute out the desired text rather than simply locate it, we'll need to use `gsub` instead of `grep`.
 ```{r, warning=FALSE}
