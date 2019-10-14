@@ -113,6 +113,8 @@ Function    | Use
 `summarize` | Summarize data by groups, based on preceding `group_by` call, one row for each group
 `mutate`    | Create a new variable in a data frame by mutating existing variable(s), new variable = mutation operation
 
+\newline
+
 We'll also be using the piping operator, `%>%`, which allows us to pipe the output of one function directly into the next: this allows us to make our code clearer and more concise. Think of it like pouring our data through a series of sifters with progressively smaller withes.
 
 First, let's rename some of these ugly variable (column) names with the `rename` function. Note that `<-` is overwriting all_records with the new variable names: without `<-` R would simply print it differently in the console without actually changing all_records. If you're working with your own data, find one or more that you can change, even if just temporarily.
@@ -329,6 +331,8 @@ Function    | Use
 `full_join`    | Returns all rows from each data frame; rows without matching values in the other data frame will have NA values
 `anti_join`    | Returns all rows from the first data frame for which there are no matching values in the second
 
+\newline
+
 It is also possible to combine data frames by multiple variables by making a vector of the variable names within the join function:
 ```{r, warning=FALSE}
 inner_join(transactions[1:3,], books, by=c("Accession..", "Title"))
@@ -343,6 +347,8 @@ Function    | Use
 `union`      | Returns rows that appear in either data frame but removes duplicate rows
 `setdiff`    | Returns rows that appear in the first data frame that do not appear in the second
 
+\newline
+
 As you can see, there's some useful filtering potential here.
 ```{r}
 union(transactions[1:3,], transactions[1:3,])
@@ -355,6 +361,8 @@ Function    | Use
 `t`      | Transpose a data frame, flipping columns and rows
 `spread` | Turns each unique value in a specified column into its own new column, the value of which for each row corresponds to the value of another specified column
 `gather` | Turns each specified column name into a value in a single new column, duplicating a new row for each, and turning the value for each former column into a value in a single new column.
+
+\newline
 
 These are easiest to understand in action, so let's first build a sample data frame of the number of times each patron checked out each periodical, limiting ourselves to just the periodicals that were checked out more than 150 times total.
 ```{r}
